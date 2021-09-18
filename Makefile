@@ -1,3 +1,4 @@
+version = patch
 # Strip debug info
 GO_FLAGS += "-ldflags=-s -w"
 
@@ -6,6 +7,10 @@ GO_FLAGS += -trimpath
 
 wasm: cmd/goldmark/*.go go.mod
 	CGO_ENABLED=0 GOOS=js GOARCH=wasm go build $(GO_FLAGS) -o ./deno/goldmark.wasm ./cmd/goldmark/goldmark.go
+
+publish:
+	git commit -m "release $(version)" --allow-empty
+	git push
 
 clean:
 	git clean -dxf
