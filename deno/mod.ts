@@ -20,11 +20,11 @@ const ensureServiceIsRunning = (): Promise<Service> => {
 }
 
 const instantiateWASM = async (
-  wasmURL: string,
+  wasmURL: URL,
   importObject: Record<string, any>
 ): Promise<WebAssembly.WebAssemblyInstantiatedSource> => {
-  if (wasmURL.startsWith('file://')) {
-    const bytes = await Deno.readFile("./goldmark.wasm");
+  if (wasmURL.protocol.startsWith('file')) {
+    const bytes = await Deno.readFile(wasmURL);
     return await WebAssembly.instantiate(bytes, importObject)
   } else {
       return await WebAssembly.instantiateStreaming(
@@ -36,7 +36,7 @@ const instantiateWASM = async (
 
 const startRunningService = async () => {
   const go = new Go();
-  const wasm = await instantiateWASM(new URL('./goldmark.wasm', import.meta.url).toString(), go.importObject);
+  const wasm = await instantiateWASM(new URL('./goldmark.wasm', import.meta.url), go.importObject);
   go.run(wasm.instance);
 
   const apiKeys = new Set([
