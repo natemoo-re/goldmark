@@ -28,14 +28,14 @@ jobs:
           make wasm
 
       - name: "check patch"
-        if: contains(github.event.head_commit.message, 'release: patch')
+        if: contains(github.event.head_commit.message, 'release patch')
         run: deno run --allow-net https://deno.land/x/cicd/create-patch-release.ts ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }}
 
       - name: "check minor"
-        if: contains(github.event.head_commit.message, 'release: minor')
+        if: contains(github.event.head_commit.message, 'release minor')
         run: deno run --allow-net https://deno.land/x/cicd/create-minor-release.ts ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }}
 
       - name: "check major"
-        if: contains(github.event.head_commit.message, 'release: major')
+        if: contains(github.event.head_commit.message, 'release major')
         run: deno run --allow-net https://deno.land/x/cicd/create-major-release.ts ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }}
       
