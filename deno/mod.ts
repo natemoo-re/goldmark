@@ -5,13 +5,8 @@ const Go = (globalThis as any).Go;
 
 export const transform: typeof types.transform = async (input, options) => {
   const service = await ensureServiceIsRunning();
-  return await service.transform(input, { internalURL: new URL('./shim.ts',import.meta.url).toString(), ...options });
+  return await service.transform(input, { ...options });
 };
-
-export const compile = async (template: string): Promise<string> => {
-  const { default: mod } = await import(`data:text/typescript;charset=utf-8;base64,${btoa(template)}`)
-  return mod.__render()
-}
 
 interface Service {
   transform: typeof types.transform;
@@ -29,7 +24,7 @@ const instantiateWASM = async (
   importObject: Record<string, any>
 ): Promise<WebAssembly.WebAssemblyInstantiatedSource> => {
   if (wasmURL.startsWith('file://')) {
-    const bytes = await Deno.readFile("./astro.wasm");
+    const bytes = await Deno.readFile("./goldmark.wasm");
     return await WebAssembly.instantiate(bytes, importObject)
   } else {
       return await WebAssembly.instantiateStreaming(
@@ -41,7 +36,7 @@ const instantiateWASM = async (
 
 const startRunningService = async () => {
   const go = new Go();
-  const wasm = await instantiateWASM(new URL('./astro.wasm', import.meta.url).toString(), go.importObject);
+  const wasm = await instantiateWASM(new URL('./goldmark.wasm', import.meta.url).toString(), go.importObject);
   go.run(wasm.instance);
 
   const apiKeys = new Set([
@@ -50,7 +45,7 @@ const startRunningService = async () => {
   const service: any = Object.create(null);
 
   for (const key of apiKeys.values()) {
-    const globalKey = `__astro_${key}`;
+    const globalKey = `__goldmark_${key}`;
     service[key] = (globalThis as any)[globalKey];
     delete (globalThis as any)[globalKey];
   }

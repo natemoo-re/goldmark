@@ -5,5 +5,8 @@
   ],
   "go.toolsEnvVars": {
     "GOFLAGS": "-tags=gc.conservative,scheduler.coroutines",
-  }
+  },
+  "deno.enable": true,
+  "deno.lint": true,
+  "deno.unstable": true
 }
