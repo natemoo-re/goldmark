@@ -2,9 +2,8 @@ name: CI
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    branches: 
+      - main
 
 jobs:
   build-wasm:
@@ -12,40 +11,30 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Go
+      - name: Setup Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.16
 
-      - name: Get tinygo runtime
-        run: |
-          wget -P /tmp/ https://github.com/tinygo-org/tinygo/releases/download/v0.18.0/tinygo_0.18.0_amd64.deb
-          sudo dpkg -i /tmp/tinygo_0.18.0_amd64.deb
+      - name: Setup Deno
+        uses: denolib/setup-deno@v2 
+        with:
+         deno-version: v1.13.2
 
       - name: Build WASM
         run: |
-          mkdir -p /home/runner/go/src/github.com/snowpackjs/astro
-          cp -R . /home/runner/go/src/github.com/snowpackjs/astro/
-          tinygo build -o astro.wasm -target wasm ./cmd/astro-wasm/astro-wasm.go
+          mkdir -p /home/runner/go/src/github.com/natemoo-re/goldmark
+          cp -R . /home/runner/go/src/github.com/natemoo-re/goldmark
+          make wasm
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+      - name: "check patch"
+        if: contains(github.event.head_commit.message, 'create patch release')
+        run: deno run --allow-net https://deno.land/x/cicd/create-patch-release.ts ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }}
 
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.16
+      - name: "check minor"
+        if: contains(github.event.head_commit.message, 'create minor release')
+        run: deno run --allow-net https://deno.land/x/cicd/create-minor-release.ts ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }}
 
-      - name: Test
-        run: go test -v ./internal/...
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: latest
+      - name: "check major"
+        if: contains(github.event.head_commit.message, 'create major release')
+        run: deno run --allow-net https://deno.land/x/cicd/create-major-release.ts ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }}
