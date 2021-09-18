@@ -9,7 +9,7 @@ wasm: cmd/goldmark/*.go go.mod
 	CGO_ENABLED=0 GOOS=js GOARCH=wasm go build $(GO_FLAGS) -o ./deno/goldmark.wasm ./cmd/goldmark/goldmark.go
 
 release:
-	wasm
+	make wasm
 	git add --force ./deno/goldmark.wasm
 	git commit -m "release $(version)" --allow-empty
 	git push
