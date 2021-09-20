@@ -9,16 +9,27 @@ Powered by Go's [Goldmark](https://github.com/yuin/goldmark) compiled to WASM.
 ### Basic Example
 
 ```ts
-import { transform } from "https://deno.land/x/goldmark/mod.ts";
+import { init, transform } from "https://deno.land/x/goldmark/mod.ts";
 
+await init();
 const markdown = await Deno.readTextFile(new URL('./content.md', import.meta.url));
-const { frontmatter, code } = await transform(markdown)
+const { frontmatter, content } = await transform(markdown, {
+    render: {
+        unsafeHTML: true
+    },
+    extensions: {
+        GFM: true,
+        typographer: true,
+    }
+})
 
 console.log(frontmatter);
-console.log(code);
+console.log(content);
 ```
 
 ## Performance
 
-The initial run of `transform` may take somewhere between `500ms` and `1s`, because it needs to fetch the WASM module.
-Subsequent runs come in under `1ms` on average. See [`bench/mod.ts`](https://github.com/natemoo-re/goldmark/blob/main/bench/mod.ts).
+Runs come in well under `1ms` on average. See [`bench/mod.ts`](https://github.com/natemoo-re/goldmark/blob/main/bench/mod.ts).
+
+Sampling **100,000** runs completed in `58s` with an average run of `0.57ms`.
+

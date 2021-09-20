@@ -1,9 +1,31 @@
+
+export interface RenderOptions {
+	hardWrap?: boolean;
+	XHTML?: boolean;
+	unsafeHTML?: boolean;
+}
+
+export interface Extensions {
+	attributes?: boolean;
+	autoHeadingID?: boolean;
+	autolinks?: boolean;
+	definitionList?: boolean;
+	footnote?: boolean;
+	frontmatter?: boolean;
+	GFM?: boolean;
+	strikethrough?: boolean;
+	table?: boolean;
+	taskList?: boolean;
+	typographer?: boolean;
+}
+
 export interface TransformOptions {
-  sourcefile?: string;
+  render?: RenderOptions;
+  extensions?: Extensions;
 }
 
 export interface TransformResult {
-	code: string;
+	content: string;
 	frontmatter: Record<string|number, unknown>|null;
 }
 
