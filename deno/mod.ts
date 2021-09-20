@@ -1,6 +1,7 @@
 import type * as types from "./types.ts";
 export * from "./types.ts";
 import "./wasm_exec.js";
+import { source } from "./goldmark_wasm.js";
 
 const Go = (globalThis as any).Go;
 
@@ -62,24 +63,9 @@ const ensureServiceIsRunning = (): Promise<Service> => {
   return startRunningService();
 }
 
-const instantiateWASM = async (
-  wasmURL: URL,
-  importObject: Record<string, any>
-): Promise<WebAssembly.WebAssemblyInstantiatedSource> => {
-  if (wasmURL.protocol.startsWith('file')) {
-    const bytes = await Deno.readFile(wasmURL);
-    return await WebAssembly.instantiate(bytes, importObject)
-  } else {
-      return await WebAssembly.instantiateStreaming(
-      fetch(wasmURL),
-      importObject
-    );
-  }
-};
-
 const startRunningService = async () => {
   const go = new Go();
-  const wasm = await instantiateWASM(new URL('./goldmark.wasm', import.meta.url), go.importObject);
+  const wasm = await WebAssembly.instantiate(source, go.importObject);
   go.run(wasm.instance);
 
   const apiKeys = new Set([
