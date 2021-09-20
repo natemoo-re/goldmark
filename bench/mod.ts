@@ -2,7 +2,7 @@ import ms from 'https://cdn.skypack.dev/ms';
 import { init, transform } from "../deno/mod.ts";
 
 await init();
-const runs = 100000;
+const runs = 5000;
 const times: number[] = [];
 const content = await Deno.readTextFile(new URL('./content.md', import.meta.url));
 
