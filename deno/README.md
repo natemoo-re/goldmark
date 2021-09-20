@@ -27,6 +27,10 @@ console.log(frontmatter);
 console.log(content);
 ```
 
+## Configuration
+
+Goldmark comes with many built-in extensions. See the [`types.ts`](https://github.com/natemoo-re/goldmark/blob/main/deno/types.ts) file for complete options.
+
 ## Performance
 
 Runs come in well under `1ms` on average. See [`bench/mod.ts`](https://github.com/natemoo-re/goldmark/blob/main/bench/mod.ts).
