@@ -39,8 +39,27 @@ function makeTransformOptions(options = {}) {
   }
 }
 
-export default function transform(input, options) {
+process.on('message', async ({ type, ...payload }) => {
+  switch (type) {
+    case 'init': {
+      await init();
+      process.send({ type: 'init', id: payload.id });
+      return;
+    }
+    case 'transform': {
+      const result = await transform(payload.input, payload.options)
+      process.send({ type: 'transform', result, id: payload.id })
+      return;
+    }
+  }
+});
+
+export function transform(input, options) {
     return getService().then((service) => service.transform(input, makeTransformOptions(options)));
+}
+
+export function init() {
+  return getService();
 }
 
 
@@ -77,4 +96,3 @@ const startRunningService = () => {
   });
 };
 
-export const init = getService();

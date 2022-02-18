@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/natemoo-re/goldmark#readme",
   "dependencies": {
-    "lz4-napi": "^2.0.3"
+    "lz4-napi": "^2.0.3",
+    "threads": "^1.7.0"
   }
 }

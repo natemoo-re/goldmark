@@ -1,49 +1,13 @@
-import Go from "./wasm_exec.mjs";
-import { source } from './goldmark_wasm.mjs';
+// Why the weird child_process wrapper?
+// We need to workaround https://github.com/nodejs/node/issues/36616
+// and offer an explicit `kill()` hook
+import { fork } from 'child_process';
 
-function makeTransformOptions(options = {}) {
-  const { render = {}, extensions = {} } = options;
-  const { hardWrap = false, XHTML = false, unsafeHTML = false } = render;
-  const {
-    frontmatter = true,
-    attributes = false,
-    autoHeadingID = false,
-    autolinks = false,
-    definitionList = false,
-    footnote = false,
-    GFM = false,
-    strikethrough = false,
-    table = false,
-    taskList = false,
-    typographer = false,
-  } = extensions;
-  return {
-    render: {
-      hardWrap, 
-      XHTML,
-      unsafeHTML
-    },
-    extensions: {
-      attributes,
-      autoHeadingID,
-      autolinks,
-      definitionList,
-      footnote,
-      frontmatter,
-      GFM,
-      strikethrough,
-      table,
-      taskList,
-      typographer
-    }
-  }
-}
-
-export const transform = (input, options) => getService().then((service) => service.transform(input, makeTransformOptions(options)));
-
+export const init = () => getService().then((service) => service.init());
+export const transform = (input, options) => getService().then((service) => service.transform(input, options));
+export const kill = () => getService().then((service) => service.kill());
 
 let longLivedService;
-
 const getService = () => {
   if (!longLivedService) {
     longLivedService = startRunningService().catch((err) => {
@@ -56,23 +20,33 @@ const getService = () => {
   return longLivedService;
 };
 
-// Workaround for https://github.com/nodejs/node/issues/36616
-const timerId = setInterval(() => {}, 60000);
-
-const instantiateWASM = (importObject) => WebAssembly.instantiate(source, importObject).then((mod) => {
-  clearInterval(timerId);
-  return mod;
-});
-
 const startRunningService = () => {
-  const go = new Go();
-  return instantiateWASM(go.importObject).then((wasm) => {
-    go.run(wasm.instance);
-    const _service = globalThis.goldmark;
-    return {
-      transform: (input, options) => new Promise((resolve) => resolve(_service.transform(input, options || {}))),
-    };
-  });
-};
+  const worker = fork(new URL("./worker.mjs", import.meta.url), []);
+  let ids = 0;
 
-export const init = getService();
+  function done(id) {
+    return new Promise(resolve => {
+      function done(message) {
+        if (id === message.id) {
+          return resolve(message.result);
+        }
+        worker.off('message', done);
+      }
+      worker.on('message', done)
+    })
+  }
+
+  return Promise.resolve({
+    init: async () => {
+      const id = `init-${ids++}`;
+      worker.send({ type: 'init', id });
+      await done(id);
+    },
+    transform: async (input, options) => {
+      const id = `transform-${ids++}`;
+      worker.send({ type: 'transform', input, options, id });
+      await done(id);
+    },
+    kill: () => worker.kill()
+  })
+};

@@ -23,7 +23,7 @@ bench-deno:
 	deno run --allow-read --allow-write ./bench/mod.ts
 
 bench-node:
-	node --wasm-dynamic-tiering ./bench/mod.mjs
+	node ./bench/mod.mjs
 
 clean:
 	git clean -dxf
