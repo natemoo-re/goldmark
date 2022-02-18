@@ -1,0 +1,22 @@
+{
+  "name": "goldmark",
+  "version": "0.1.0",
+  "description": "A very fast Markdown compiler for Node",
+  "main": "index.mjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/natemoo-re/goldmark.git"
+  },
+  "author": {
+    "name": "Nate Moore",
+    "email": "nate@natemoo.re"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/natemoo-re/goldmark/issues"
+  },
+  "homepage": "https://github.com/natemoo-re/goldmark#readme",
+  "dependencies": {
+    "lz4-napi": "^2.0.3"
+  }
+}

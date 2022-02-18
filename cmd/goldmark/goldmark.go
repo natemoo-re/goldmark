@@ -1,4 +1,6 @@
+//go:build js && wasm
 // +build js,wasm
+
 package main
 
 import (
@@ -15,8 +17,10 @@ import (
 )
 
 func main() {
-	js.Global().Set("__goldmark_transform", js.FuncOf(Transform))
-	<-make(chan bool)
+	js.Global().Set("goldmark", js.ValueOf(make(map[string]interface{})))
+	module := js.Global().Get("goldmark")
+	module.Set("transform", js.FuncOf(Transform))
+	<-make(chan struct{})
 }
 
 func jsString(j js.Value) string {
