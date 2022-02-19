@@ -18,10 +18,12 @@
   },
   "homepage": "https://github.com/natemoo-re/goldmark#readme",
   "dependencies": {
-    "lz4-napi": "^2.0.3",
-    "terser": "^5.10.0"
+    "fflate": "^0.7.3"
   },
   "volta": {
-    "node": "17.5.0"
+    "node": "14.19.0"
+  },
+  "devDependencies": {
+    "ms": "^2.1.3"
   }
 }

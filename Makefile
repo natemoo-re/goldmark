@@ -10,22 +10,28 @@ wasm: cmd/goldmark/*.go go.mod
 	cp ./deno/goldmark.wasm ./node/goldmark.wasm
 
 inline:
-	deno run --allow-read --allow-write build.ts
-	node build.mjs
+	deno run --allow-read --allow-write scripts/build/deno.ts
+	deno run --allow-read --allow-write scripts/build/node.ts
 
-release:
+build:
 	make wasm
 	make inline
-	git add --force ./deno/goldmark_wasm.js
-	git add --force ./node/goldmark_wasm.mjs
-	git commit -m "release $(version)" --allow-empty
-	git push
+
+bench:
+	make bench-deno
+	make bench-node
 
 bench-deno:
-	deno run --allow-read --allow-write ./bench/mod.ts
+	deno run --allow-read --allow-write scripts/bench/deno.ts
 
 bench-node:
-	node ./bench/mod.mjs
+	node scripts/bench/node.mjs
+
+release:
+	make build
+	git add --force ./deno/goldmark_wasm.js ./node/goldmark_wasm.mjs
+	git commit -m "release $(version)" --allow-empty
+	git push
 
 clean:
 	git clean -dxf
