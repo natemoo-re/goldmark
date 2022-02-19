@@ -2,6 +2,7 @@
 // We need to workaround https://github.com/nodejs/node/issues/36616
 // and offer an explicit `kill()` hook
 import { fork } from 'child_process';
+import { fileURLToPath } from 'url';
 
 export const init = () => getService().then((service) => service.init());
 export const transform = (input, options) => getService().then((service) => service.transform(input, options));
@@ -21,7 +22,7 @@ const getService = () => {
 };
 
 const startRunningService = () => {
-  const worker = fork(new URL("./worker.mjs", import.meta.url), []);
+  const worker = fork(fileURLToPath(new URL("./worker.mjs", import.meta.url)), []);
   let ids = 0;
 
   function done(id) {

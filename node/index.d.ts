@@ -28,4 +28,6 @@ export interface TransformResult {
 	frontmatter: Record<string|number, unknown>|null;
 }
 
+export declare function init(): Promise<void>;
 export declare function transform(input: string, options?: TransformOptions): Promise<TransformResult>;
+export declare function kill(): Promise<void>;
