@@ -5,6 +5,13 @@
   "type": "module",
   "main": "index.mjs",
   "types": "index.d.ts",
+  "files": [
+    "goldmark_wasm.js",
+    "index.d.ts",
+    "index.mjs",
+    "wasm_exec.mjs",
+    "worker.mjs"
+  ],
   "exports": {
     ".": "./index.mjs",
     "./package.json": "./package.json",
@@ -24,7 +31,6 @@
   },
   "homepage": "https://github.com/natemoo-re/goldmark#readme",
   "dependencies": {
-    "lz4-napi": "^2.0.3",
-    "threads": "^1.7.0"
+    "lz4-napi": "^2.0.3"
   }
 }
