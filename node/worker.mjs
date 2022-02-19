@@ -96,3 +96,4 @@ const startRunningService = () => {
   });
 };
 
+process.send('ready');

@@ -21,32 +21,35 @@ const getService = () => {
   return longLivedService;
 };
 
-const startRunningService = () => {
-  const worker = fork(fileURLToPath(new URL("./worker.mjs", import.meta.url)), []);
+const startRunningService = async () => {
+  const worker = fork(fileURLToPath(new URL("./worker.mjs", import.meta.url)), [], { detached: true });
+  await new Promise((resolve) => {
+		worker.once('message', (type) => type === 'ready' ? resolve() : null)
+	})
   let ids = 0;
 
   function done(id) {
     return new Promise(resolve => {
       function done(message) {
         if (id === message.id) {
+          worker.off('message', done);
           return resolve(message.result);
         }
-        worker.off('message', done);
       }
       worker.on('message', done)
     })
   }
 
   return Promise.resolve({
-    init: async () => {
+    init: () => {
       const id = `init-${ids++}`;
       worker.send({ type: 'init', id });
-      await done(id);
+      return done(id);
     },
-    transform: async (input, options) => {
+    transform: (input, options) => {
       const id = `transform-${ids++}`;
       worker.send({ type: 'transform', input, options, id });
-      await done(id);
+      return done(id);
     },
     kill: () => worker.kill()
   })
