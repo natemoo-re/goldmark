@@ -1,0 +1,29 @@
+{
+  "name": "goldmark",
+  "version": "0.1.5",
+  "description": "A very fast Markdown compiler for Node",
+  "type": "module",
+  "main": "index.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": "./index.mjs",
+    "./package.json": "./package.json",
+    "./index.d.ts": "./index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/natemoo-re/goldmark.git"
+  },
+  "author": {
+    "name": "Nate Moore",
+    "email": "nate@natemoo.re"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/natemoo-re/goldmark/issues"
+  },
+  "homepage": "https://github.com/natemoo-re/goldmark#readme",
+  "dependencies": {
+    "fflate": "^0.7.3"
+  }
+}

@@ -1,10 +1,7 @@
-import type * as types from "./types.ts";
-export * from "./types.ts";
-import "./wasm_exec.js";
-import { source } from "./goldmark_wasm.js";
+import Go from "./wasm_exec.mjs";
+import { source } from './goldmark_wasm.mjs';
 
-
-function makeTransformOptions(options: types.TransformOptions = {}): Required<types.TransformOptions> {
+function makeTransformOptions(options = {}) {
   const { render = {}, extensions = {} } = options;
   const { hardWrap = false, XHTML = false, unsafeHTML = false } = render;
   const {
@@ -42,16 +39,33 @@ function makeTransformOptions(options: types.TransformOptions = {}): Required<ty
   }
 }
 
-export const init = () => getService();
-export const transform: typeof types.transform = (input, options) => getService().then((service) => service.transform(input, makeTransformOptions(options)));
+process.on('message', async ({ type, ...payload }) => {
+  switch (type) {
+    case 'init': {
+      await init();
+      process.send({ type: 'init', id: payload.id });
+      return;
+    }
+    case 'transform': {
+      const result = await transform(payload.input, payload.options)
+      process.send({ type: 'transform', result, id: payload.id })
+      return;
+    }
+  }
+});
 
-interface Service {
-  transform: typeof types.transform;
+export function transform(input, options) {
+    return getService().then((service) => service.transform(input, makeTransformOptions(options)));
 }
 
-let longLivedService: Promise<Service>|undefined;
+export function init() {
+  return getService();
+}
 
-const getService = (): Promise<Service> => {
+
+let longLivedService;
+
+const getService = () => {
   if (!longLivedService) {
     longLivedService = startRunningService().catch((err) => {
       // Let the caller try again if this fails.
@@ -63,15 +77,23 @@ const getService = (): Promise<Service> => {
   return longLivedService;
 };
 
-const instantiateWASM = (importObject: Record<string, any>) => WebAssembly.instantiate(source, importObject)
+// Workaround for https://github.com/nodejs/node/issues/36616
+const timerId = setInterval(() => {}, 60000);
 
-const startRunningService = (): Promise<Service> => {
-  const go = new (globalThis as any).Go();
+const instantiateWASM = (importObject) => WebAssembly.instantiate(source, importObject).then((mod) => {
+  clearInterval(timerId);
+  return mod;
+});
+
+const startRunningService = () => {
+  const go = new Go();
   return instantiateWASM(go.importObject).then((wasm) => {
     go.run(wasm.instance);
-    const _service: any = (globalThis as any).goldmark;
+    const _service = globalThis.goldmark;
     return {
       transform: (input, options) => new Promise((resolve) => resolve(_service.transform(input, options || {}))),
     };
   });
 };
+
+process.send('ready');

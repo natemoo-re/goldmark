@@ -7,14 +7,29 @@ GO_FLAGS += -trimpath
 
 wasm: cmd/goldmark/*.go go.mod
 	CGO_ENABLED=0 GOOS=js GOARCH=wasm go build $(GO_FLAGS) -o ./deno/goldmark.wasm ./cmd/goldmark/goldmark.go
+	cp ./deno/goldmark.wasm ./node/goldmark.wasm
 
 inline:
-	deno run --allow-read --allow-write build.ts
+	deno run --allow-read --allow-write scripts/build/deno.ts
+	deno run --allow-read --allow-write scripts/build/node.ts
 
-release:
+build:
 	make wasm
 	make inline
-	git add --force ./deno/goldmark_wasm.js
+
+bench:
+	make bench-deno
+	make bench-node
+
+bench-deno:
+	deno run --allow-read --allow-write scripts/bench/deno.ts
+
+bench-node:
+	node scripts/bench/node.mjs
+
+release:
+	make build
+	git add --force ./deno/goldmark_wasm.js ./node/goldmark_wasm.mjs
 	git commit -m "release $(version)" --allow-empty
 	git push
 
