@@ -2,7 +2,14 @@
   "name": "goldmark",
   "version": "0.1.0",
   "description": "A very fast Markdown compiler for Node",
+  "type": "module",
   "main": "index.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": "./index.mjs",
+    "./package.json": "./package.json",
+    "./index.d.ts": "./index.d.ts"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/natemoo-re/goldmark.git"
