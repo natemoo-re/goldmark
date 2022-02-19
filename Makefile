@@ -11,11 +11,13 @@ wasm: cmd/goldmark/*.go go.mod
 
 inline:
 	deno run --allow-read --allow-write build.ts
+	node build.mjs
 
 release:
 	make wasm
 	make inline
 	git add --force ./deno/goldmark_wasm.js
+	git add --force ./node/goldmark_wasm.mjs
 	git commit -m "release $(version)" --allow-empty
 	git push
 
