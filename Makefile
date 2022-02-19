@@ -31,10 +31,7 @@ release:
 	make build
 	git add --force ./deno/goldmark_wasm.js ./node/goldmark_wasm.mjs
 	git commit -m "release $(version)" --allow-empty
-	cd node
-	npm version $(version)
-	cd ..
-	git push --follow-tags
+	git push
 
 clean:
 	git clean -dxf
