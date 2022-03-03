@@ -43,7 +43,7 @@ function makeTransformOptions(options: types.TransformOptions = {}): Required<ty
 }
 
 export const init = () => getService();
-export const transform: typeof types.transform = (input, options) => getService().then((service) => service.transform(input, makeTransformOptions(options)));
+export const transform: typeof types.transform = (input, options) => getService().then((service) => service.transform(input, makeTransformOptions(options))).then((value: any) => JSON.parse(value));
 
 interface Service {
   transform: typeof types.transform;

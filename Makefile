@@ -29,6 +29,9 @@ bench-node:
 
 release:
 	make build
+	cd node
+	npm version $(version)
+	cd ..
 	git add --force ./deno/goldmark_wasm.js ./node/goldmark_wasm.mjs
 	git commit -m "release $(version)" --allow-empty
 	git push

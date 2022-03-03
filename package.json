@@ -1,7 +1,7 @@
 {
   "name": "goldmark",
-  "version": "1.0.0",
-  "description": "A very fast Markdown compiler for Deno 🦕",
+  "version": "0.1.0",
+  "description": "A very fast Markdown compiler ported to the JS/TS ecosystem",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
