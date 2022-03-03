@@ -5,9 +5,9 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"syscall/js"
 
-	"github.com/norunners/vert"
 	"github.com/yuin/goldmark"
 	meta "github.com/yuin/goldmark-meta"
 	"github.com/yuin/goldmark/extension"
@@ -56,8 +56,8 @@ type Extensions struct {
 }
 
 type TransformResult struct {
-	Content     string                 `js:"content"`
-	Frontmatter map[string]interface{} `js:"frontmatter"`
+	Content     string                 `json:"content"`
+	Frontmatter map[string]interface{} `json:"frontmatter"`
 }
 
 func makeRender(renderOptions js.Value) Render {
@@ -163,9 +163,11 @@ func Transform(this js.Value, args []js.Value) interface{} {
 		panic(err)
 	}
 	frontmatter := meta.Get(context)
-
-	return vert.ValueOf(TransformResult{
+	result := TransformResult{
 		Frontmatter: frontmatter,
 		Content:     buf.String(),
-	})
+	}
+	data, _ := json.Marshal(result)
+
+	return js.ValueOf(string(data))
 }

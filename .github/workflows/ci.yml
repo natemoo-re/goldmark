@@ -45,7 +45,9 @@ jobs:
 
       - name: "check minor"
         if: contains(github.event.head_commit.message, 'release minor')
-        run: deno run --allow-net https://deno.land/x/cicd/create-minor-release.ts ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }}
+        run: |
+          deno run --allow-net https://deno.land/x/cicd/create-minor-release.ts ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }}
+          cd node && npm version minor && npm publish
 
       - name: "check minor"
         if: contains(github.event.head_commit.message, 'release minor')

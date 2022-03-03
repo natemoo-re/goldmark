@@ -55,7 +55,7 @@ process.on('message', async ({ type, ...payload }) => {
 });
 
 export function transform(input, options) {
-    return getService().then((service) => service.transform(input, makeTransformOptions(options)));
+    return getService().then((service) => service.transform(input, makeTransformOptions(options))).then(value => JSON.parse(value));
 }
 
 export function init() {

@@ -19,7 +19,7 @@ async function run() {
   console.log(`🤖 Sampling ${runs} runs...`);
   for (let i = 0; i < runs; i++) {
     const start = performance.now();
-    await transform(content)
+    const result = await transform(content)
     const end = performance.now();
     times.push(end - start)
   }
