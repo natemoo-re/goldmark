@@ -5,6 +5,10 @@ on:
     branches: 
       - main
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   bench:
     runs-on: ubuntu-latest
