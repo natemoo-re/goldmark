@@ -2,3 +2,4 @@
 node_modules
 *.wasm
 /astro
+bench.txt

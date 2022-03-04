@@ -17,15 +17,19 @@ build:
 	make wasm
 	make inline
 
+bench-ci:
+	deno run --unstable --allow-read --allow-write scripts/bench/deno.ts --ci > bench.txt
+	node scripts/bench/node.mjs --ci >> bench.txt
+
 bench:
-	make bench-deno
-	make bench-node
+	deno run --unstable --allow-read --allow-write scripts/bench/deno.ts
+	node scripts/bench/node.mjs > bench-node.txt
 
 bench-deno:
 	deno run --unstable --allow-read --allow-write scripts/bench/deno.ts
 
 bench-node:
-	node scripts/bench/node.mjs
+	node scripts/bench/node.mjs > bench-node.txt
 
 release:
 	make build
