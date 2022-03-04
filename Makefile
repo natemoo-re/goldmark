@@ -10,8 +10,8 @@ wasm: cmd/goldmark/*.go go.mod
 	cp ./deno/goldmark.wasm ./node/goldmark.wasm
 
 inline:
-	deno run --allow-read --allow-write scripts/build/deno.ts
-	deno run --allow-read --allow-write scripts/build/node.ts
+	deno run --unstable --allow-read --allow-write scripts/build/deno.ts
+	deno run --unstable --allow-read --allow-write scripts/build/node.ts
 
 build:
 	make wasm
@@ -22,7 +22,7 @@ bench:
 	make bench-node
 
 bench-deno:
-	deno run --allow-read --allow-write scripts/bench/deno.ts
+	deno run --unstable --allow-read --allow-write scripts/bench/deno.ts
 
 bench-node:
 	node scripts/bench/node.mjs
