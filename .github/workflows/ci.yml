@@ -11,7 +11,7 @@ defaults:
 
 jobs:
   bench:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
@@ -55,7 +55,7 @@ jobs:
           body: ${{ steps.get-comment.outputs.body }}
 
   release:
-    runs-on: macos-latestubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 

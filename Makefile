@@ -18,8 +18,7 @@ build:
 	make inline
 
 bench-ci:
-	deno run --no-check --unstable --allow-read --allow-write scripts/bench/deno.ts --ci > bench.txt
-	node scripts/bench/node.mjs --ci >> bench.txt
+	deno run --no-check --quiet --unstable --allow-read --allow-write scripts/bench/deno.ts --ci > bench.txt
 
 bench:
 	deno run --unstable --allow-read --allow-write scripts/bench/deno.ts
