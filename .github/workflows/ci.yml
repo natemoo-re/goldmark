@@ -10,50 +10,6 @@ defaults:
     shell: bash
 
 jobs:
-  bench:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Setup Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.16
-
-      - name: Setup Deno
-        uses: denolib/setup-deno@v2 
-        with:
-         deno-version: v1.19.2
-
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Build
-        run: |
-          mkdir -p /home/runner/go/src/github.com/natemoo-re/goldmark
-          cp -R . /home/runner/go/src/github.com/natemoo-re/goldmark
-          make build
-      
-      - name: Bench
-        run: |
-          make bench-ci
-      
-      - id: get-comment
-        run: |
-          body=$(cat bench.txt)
-          body="${body//'%'/'%25'}"
-          body="${body//$'\n'/'%0A'}"
-          body="${body//$'\r'/'%0D'}" 
-          echo ::set-output name=body::$body
-
-      - name: Create commit comment
-        uses: peter-evans/commit-comment@v1
-        with:
-          body: ${{ steps.get-comment.outputs.body }}
-
   release:
     runs-on: ubuntu-latest
     steps:
